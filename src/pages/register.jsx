@@ -22,7 +22,7 @@ import {
 } from "../state/slices/userSlice.js";
 import "./register.css";
 import validate_form from "./Errors/validate_form";
-export const developmentApiEntryPoint = "http://localhost:8080";
+export const developmentApiEntryPoint = "https://supportbackend-6v79.onrender.com";
 
 export const NavBar = ({ open, links, setState }) => {
   return (
