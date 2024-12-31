@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Navbar,
   Nav,
@@ -19,6 +19,9 @@ import eth from "../assets/coin-icons/ethereum.png";
 import doge from "../assets/coin-icons/dogecoin.svg";
 import Footer from "../components/footer";
 import { HighLight } from "./login";
+import fetchData from "../fetchData";
+import { developmentApiEntryPoint } from "./register";
+import { useNavigate } from "react-router-dom";
 const coins = [usdt, eth, btc, doge];
 const CoinsCon = styled.div`
   width: 80vw;
@@ -46,11 +49,134 @@ const Input = styled.input`
   margin: 20px auto;
 `;
 const PlansAndCoins = () => {
+  const token=localStorage.getItem("support_token")
+  const navigate= useNavigate()
+
   const [currentPlan, setCurrentPlan] = useState({});
   const [currentCoin, setCurrentCoin] = useState("");
+  const [fetchedCoins,setFetchedCoins]= useState([])
   const plansMatch = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const [explanation, setExplanation] = useState("");
   const [invalidAmount, setInvalidamount] = useState(false);
+  const [currentAmount, setCurrentAmount]=useState(0)
+  console.log(fetchedCoins)
+  useEffect(()=>{
+    if(!token){
+      navigate("/")
+    }else{
+      fetchData(
+        `${developmentApiEntryPoint}/users/getcoins`,
+        (data)=>{
+          setFetchedCoins(data.result)
+          
+        },(message)=>{
+          alert(message)
+          navigate("/")
+        }
+      )
+    }
+  },[])
+  const invest=()=>{
+    if(!currentCoin){
+      alert('Please select a coin copy the address by clicking the "Copy Wallet ID" button,  make payment to the address and click Invest')
+    }
+    else{
+      fetchData(
+        `${developmentApiEntryPoint}/requests/invest`,
+        (data)=>{
+          alert("Request sent successfully")
+          navigate("/")
+        },
+        (message)=>{
+          alert("an error occured while trying to process request")
+          navigate("/invest")
+        },
+        "POST",
+        {plan:currentPlan.id, coin:currentCoin.name, amount:currentAmount},
+        token
+
+      )
+    }
+  }
+
+
+  const plans=[
+    {
+      id: "starter",
+      title: "Starter Plan",
+      roi: 15,
+      min: 50,
+      max: 499,
+      duration: 24,
+      reinvestment: "Reinvestment Not Supported",
+    },
+    {
+      id: "premium",
+      title: "Premium Plan",
+      roi: 40,
+      min: 1000,
+      max: 4999,
+      duration: 48,
+      reinvestment: "Reinvestment Supported",
+    },
+    {
+      id: "ultimate",
+      title: "Ultimate Plan",
+      roi: 65,
+      min: 10000,
+      max: 49999,
+      duration: 72,
+      reinvestment: "Reinvestment Supported",
+    },
+    {
+      id: "standard",
+      title: "Standard Plan",
+      roi: 25,
+      min: 500,
+      max: 999,
+      duration: 48,
+      reinvestment: "Reinvestment Supported",
+    },
+    {
+      id: "exclusive",
+      title: "Exclusive Plan",
+      roi: 50,
+      min: 5000,
+      max: 9999,
+      duration: 72,
+      reinvestment: "Reinvestment Supported",
+    },
+    {
+      id: "corporate",
+      title: "Corporate Plan",
+      roi: 80,
+      min: 50000,
+      max: "Unlimited USD",
+      duration: 72,
+      reinvestment: "Reinvestment Supported",
+    },
+  ]
+
+  const coins=[
+    {
+      id: "btcadd",
+      img: btc,
+      name: "bitcoin",
+      address: fetchedCoins.bitcoin||"loading ...",
+    },
+    {
+      id: "USDTadd",
+      img: usdt,
+      name: "usdt",
+      address: fetchedCoins.usdt||"loading ...",
+    },
+    {
+      id: "ethereumadd",
+      img: eth,
+      name: "ethereum",
+      address: fetchedCoins.bitcoin||"loading ...",
+    },
+  ]
 
   return (
     <div>
@@ -94,7 +220,7 @@ const PlansAndCoins = () => {
                   </Button>
                 </NavDropdown.Item>
               </NavDropdown>
-              <Nav.Link href="contact.html">Contact</Nav.Link>
+              <Nav.Link href="/home#contact">Contact</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
@@ -105,62 +231,7 @@ const PlansAndCoins = () => {
       <Container className="text-center  my-5" style={{ marginTop: "60px" }}>
         <h1 className="mb-5">Select Plan</h1>
         <Row className="gy-4">
-          {[
-            {
-              id: "starter",
-              title: "Starter Plan",
-              roi: 15,
-              min: 50,
-              max: 499,
-              duration: 24,
-              reinvestment: "Reinvestment Not Supported",
-            },
-            {
-              id: "premium",
-              title: "Premium Plan",
-              roi: 40,
-              min: 1000,
-              max: 4999,
-              duration: 48,
-              reinvestment: "Reinvestment Supported",
-            },
-            {
-              id: "ultimate",
-              title: "Ultimate Plan",
-              roi: 65,
-              min: 10000,
-              max: 49999,
-              duration: 72,
-              reinvestment: "Reinvestment Supported",
-            },
-            {
-              id: "standard",
-              title: "Standard Plan",
-              roi: 25,
-              min: 500,
-              max: 999,
-              duration: 48,
-              reinvestment: "Reinvestment Supported",
-            },
-            {
-              id: "exclusive",
-              title: "Exclusive Plan",
-              roi: 50,
-              min: 5000,
-              max: 9999,
-              duration: 72,
-              reinvestment: "Reinvestment Supported",
-            },
-            {
-              id: "corporate",
-              title: "Corporate Plan",
-              roi: 80,
-              min: 50000,
-              max: "Unlimited USD",
-              duration: 72,
-              reinvestment: "Reinvestment Supported",
-            },
-          ].map((plan) => (
+          {plans.map((plan) => (
             <Col
               onClick={() => {
                 setCurrentPlan(plan);
@@ -208,26 +279,7 @@ const PlansAndCoins = () => {
       <Container className="text-center my-5">
         <h1>Select Coin</h1>
         <Row className="gy-4 justify-content-center">
-          {[
-            {
-              id: "btcadd",
-              img: btc,
-              name: "Bitcoin",
-              address: "Our Bitcoin Wallet ID",
-            },
-            {
-              id: "USDTadd",
-              img: usdt,
-              name: "USDT",
-              address: "Our  USDT Wallet ID",
-            },
-            {
-              id: "ethereumadd",
-              img: eth,
-              name: "Ethereum",
-              address: "Our Ethereum Wallet ID",
-            },
-          ].map((coin) => (
+          {coins.map((coin) => (
             <Col
               onClick={() => {
                 setCurrentCoin(coin);
@@ -255,6 +307,7 @@ const PlansAndCoins = () => {
         <Row className="my-5">
           <h4>
             {currentCoin.name} Wallet Address:{" "}
+            <br/>
             <span>{currentCoin.address}</span>
           </h4>
           <Button
@@ -272,6 +325,7 @@ const PlansAndCoins = () => {
             placeholder="input amount to invest"
             onChange={(e) => {
               const inputAmount = e.target.value;
+               setCurrentAmount(e.target.value)
               setInvalidamount(
                 !currentPlan.min ||
                   inputAmount < currentPlan.min ||
@@ -297,6 +351,7 @@ const PlansAndCoins = () => {
             style={{ width: "250px", margin: "20px auto", display: "block" }}
             disabled={invalidAmount}
             variant="primary"
+            onClick={invest}
           >
             Invest
           </Button>

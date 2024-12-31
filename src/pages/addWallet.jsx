@@ -21,7 +21,12 @@ import {
 } from "react-icons/fa";
 import Footer from "../components/footer";
 import { HighLight } from "./login";
+import fetchData from "../fetchData";
+import { developmentApiEntryPoint } from "./register";
+import { useNavigate } from "react-router-dom";
 const AddWallet = () => {
+  const navigate=useNavigate()
+  const  token= localStorage.getItem("support_token")
   const [selectedCoin, setSelectedCoin] = useState({});
   const [errors, setErrors] = useState([]);
   const [walletId, setWalletId] = useState("");
@@ -34,13 +39,31 @@ const AddWallet = () => {
       errorList.push("You're required to provide a wallet Id");
     }
     setErrors(errorList);
+    if(errorList.length<1){
+      fetchData(
+        `${developmentApiEntryPoint}/users/addwallet`,
+        (data)=>{
+          alert("Wallet was added successfully")
+          navigate("/"
+
+          )
+        },(message)=>{
+          alert("An error occured");
+          navigate("/dashboard")
+        },
+        "POST",
+        {coin:selectedCoin.id, id:walletId},
+        token
+      )
+
+    }
   };
   return (
     <Container fluid className="p-0">
       {/* Navbar */}
       <Navbar bg="white" expand="lg" className="fixed-top px-0">
         <Container>
-          <Navbar.Brand href="index.html" className="d-flex align-items-center">
+          <Navbar.Brand href="/home" className="d-flex align-items-center">
             <h1 className="ms-3  m-0">
               Health<HighLight>Support</HighLight>
             </h1>

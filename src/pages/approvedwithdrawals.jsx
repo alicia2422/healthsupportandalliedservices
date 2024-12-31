@@ -6,8 +6,12 @@ import { HighLight } from "./login";
 import Footer from "../components/footer";
 import NavButtons from "../components/adminnavbuttons";
 import { BiTrash } from "react-icons/bi";
-
+import {EmptyTable}from "./pendingdeposits"
+import { useSelector } from "react-redux";
+import { selectAppStats } from "../state/slices/appSlice";
 const ApprovedWithdrawals = () => {
+  const {allWithdrawals}= useSelector(selectAppStats)
+  const approvedWithdrawals= allWithdrawals.filter(x=>x.status==="approved")
   return (
     <div className="container-fluid">
       {/* Top Bar */}
@@ -32,7 +36,7 @@ const ApprovedWithdrawals = () => {
 
         {/* Navbar */}
         <Navbar expand="lg" className="py-lg-0 px-lg-5">
-          <Navbar.Brand href="index.html">
+          <Navbar.Brand href="/home">
             <h3 style={{ color: "rgb(0,0,0,0.5)" }} className="display-5 m-0">
               Health<HighLight>Support</HighLight>
             </h3>
@@ -40,7 +44,7 @@ const ApprovedWithdrawals = () => {
           <Navbar.Toggle aria-controls="navbarCollapse" />
           <Navbar.Collapse id="navbarCollapse">
             <Nav className="ms-auto">
-              <Nav.Link href="index.html" className="active">
+              <Nav.Link href="/home" className="active">
                 Home
               </Nav.Link>
               <Nav.Link href="/home#about">About</Nav.Link>
@@ -102,7 +106,7 @@ const ApprovedWithdrawals = () => {
         <Card.Header>
           <h3 className="text-center grayish">Approved Withdrawals</h3>
         </Card.Header>
-        <Card.Body>
+        {approvedWithdrawals.length>0?(<Card.Body>
           <Table striped bordered hover responsive>
             <thead>
               <tr>
@@ -114,32 +118,26 @@ const ApprovedWithdrawals = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>John Doe</td>
-                <td>johndoe@example.com</td>
-                <td>Admin</td>
+              {approvedWithdrawals.map(x=>{
+                return(
+                  <tr>
+                <td>{x.userId.name}</td>
+                <td>{x.amount}</td>
+                <td>{x.wallet.coin}</td>
+                <td>{x.wallet.walletId}</td>
                 <td>
                   <Button variant="outline-danger">
                     <BiTrash />
                   </Button>
                 </td>
               </tr>
-              <tr>
-                <td>2</td>
-                <td>Jane Smith</td>
-                <td>janesmith@example.com</td>
-                <td>User</td>
-                <td>
-                  <Button variant="outline-danger">
-                    <BiTrash />
-                  </Button>
-                </td>
-              </tr>
-              {/* Add more rows as needed */}
+                )
+              })}
+              
+              
             </tbody>
           </Table>
-        </Card.Body>
+        </Card.Body>): <EmptyTable/>}
       </Card>
 
       {/* Footer */}

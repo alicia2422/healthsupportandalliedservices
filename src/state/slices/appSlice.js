@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit'
 const initialState={
-    menuOpen:false
+    menuOpen:false,
+    appStats:{}
 }
 const appSlice=createSlice({
     name:"app",
@@ -8,9 +9,13 @@ const appSlice=createSlice({
     reducers:{
         toggleMenu:(state,action)=>{
             state.menuOpen=!state.menuOpen
+        },
+        setAppStats:(state,action)=>{
+            state.appStats=action.payload
         }
     }
 })
-export const  {toggleMenu}=appSlice.actions;
+export const  {toggleMenu, setAppStats}=appSlice.actions;
 export const  selectMenuOpen=(state)=>state.app.menuOpen
+export const  selectAppStats=(state)=>state.app.appStats
 export default  appSlice.reducer

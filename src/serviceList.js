@@ -1,11 +1,11 @@
 const serviceList = [
   {
     title: `Medical Support`,
-    href: "#medicalsupport",
+    href: "/medicalsupport",
   },
   {
     title: " COVID 19 Benefits",
-    href: "#COVID19Benefits",
+    href: "/COVID19Benefits",
   },
 
   {
@@ -25,21 +25,21 @@ const serviceList = [
 
   {
     title: "Essential Health Benefits",
-    href: "#healthBenefits",
+    href: "/healthBenefits",
   },
 
   {
     title: "Health Insurance",
-    href: "#healthinsurance",
+    href: "/healthinsurance",
   },
 
   {
     title: "Cash contribution",
-    href: "#cashcontribution",
+    href: "/cashcontribution",
   },
   {
     title: "travel & expense",
-    href: "travel",
+    href: "/travelandexpense",
   },
 
   "Agricultural investment",

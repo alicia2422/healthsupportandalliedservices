@@ -7,8 +7,55 @@ import Footer from "../components/footer";
 import NavButtons from "../components/adminnavbuttons";
 import { BiTrash } from "react-icons/bi";
 import { BsCheck } from "react-icons/bs";
-
+import { useSelector } from "react-redux";
+import {selectAppStats} from "../state/slices/appSlice"
+import fetchData from "../fetchData"
+import  {developmentApiEntryPoint} from "./register"
+import { useNavigate } from "react-router-dom";
+const token= localStorage.getItem("support_token")
+export const EmptyTable= ()=><p className="text-center">Nothing to display</p>
 const PendingDeposits = () => {
+  const appStats=useSelector(selectAppStats)
+  const navigate=useNavigate()
+  const pendingInvestments= appStats.allInvestments.filter(x=>x.status==="pending")
+  const approveInvestment=(id,name,amount)=>{
+    const canProceed=window.confirm(`Are you sure you want to approve the deposit of ${amount} by ${name}`)
+  if(canProceed){
+    fetchData(
+      `${developmentApiEntryPoint}/admin/approvedeposit/${id}`,
+      (data)=>{
+        alert("Approved✔")
+        navigate("/admin")
+      },
+      (message)=>{
+        alert(message)
+      },
+      "POST",
+      {},
+    token
+    )
+  }
+  }
+  
+  const deleteInvestment=(id,name,amount)=>{
+    const canProceed=window.confirm(`Are you sure you want to delete the deposit of ${amount} by ${name}`)
+  if(canProceed){
+    fetchData(
+      `${developmentApiEntryPoint}/admin/declinedeposit/${id}`,
+      (data)=>{
+        alert("🚮 deleted")
+        navigate("/admin")
+      },
+      (message)=>{
+        alert(message)
+      },
+      "POST",
+      {},
+    token
+    )
+  }
+  }
+  console.log(pendingInvestments)
   return (
     <div className="container-fluid">
       {/* Top Bar */}
@@ -33,7 +80,7 @@ const PendingDeposits = () => {
 
         {/* Navbar */}
         <Navbar expand="lg" className="py-lg-0 px-lg-5">
-          <Navbar.Brand href="index.html">
+          <Navbar.Brand href="/home">
             <h3 style={{ color: "rgb(0,0,0,0.5)" }} className="display-5 m-0">
               Health<HighLight>Support</HighLight>
             </h3>
@@ -41,7 +88,7 @@ const PendingDeposits = () => {
           <Navbar.Toggle aria-controls="navbarCollapse" />
           <Navbar.Collapse id="navbarCollapse">
             <Nav className="ms-auto">
-              <Nav.Link href="index.html" className="active">
+              <Nav.Link href="/home" className="active">
                 Home
               </Nav.Link>
               <Nav.Link href="/home#about">About</Nav.Link>
@@ -52,7 +99,7 @@ const PendingDeposits = () => {
                 <Button
                   variant="primary"
                   className="dropdown-item text-white"
-                  onClick={() => console.log("Logout")}
+                  onClick={()=>{localStorage.removeItem("support_backend");navigate("/")}}
                 >
                   Logout
                 </Button>
@@ -103,7 +150,7 @@ const PendingDeposits = () => {
         <Card.Header>
           <h3 className="text-center grayish">Pending Deposits</h3>
         </Card.Header>
-        <Card.Body>
+        {pendingInvestments.length>0?(<Card.Body>
           <Table striped bordered hover responsive>
             <thead>
               <tr>
@@ -115,39 +162,27 @@ const PendingDeposits = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>John Doe</td>
-                <td>johndoe@example.com</td>
-                <td>Admin</td>
-                <td>
-                  <Button variant="outline-danger mx-4">
-                    <BiTrash />
-                  </Button>
-                  <Button variant="outline-info">
-                    <BsCheck />
-                  </Button>
-                </td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Jane Smith</td>
-                <td>janesmith@example.com</td>
-                <td>User</td>
-                <td>
-                  <Button variant="outline-danger mx-4">
-                    <BiTrash />
-                  </Button>
-
-                  <Button variant="outline-info">
-                    <BsCheck />
-                  </Button>
-                </td>
-              </tr>
-              {/* Add more rows as needed */}
+              {pendingInvestments.map((invest, index)=>{
+                 return <tr>
+                  <td>{index+1}</td>
+                  <td>{invest.userId.name}</td>
+                  <td> ${invest.amount}</td>
+                  <td >{invest.coin}</td>
+                  <td>
+                    <Button onClick={()=>{deleteInvestment(invest._id,invest.userId.name, invest.amount)}} variant="outline-danger mx-4">
+                      <BiTrash />
+                    </Button>
+                    <Button onClick={()=>{approveInvestment(invest._id,invest.userId.name, invest.amount)}} variant="outline-info">
+                      <BsCheck />
+                    </Button>
+                  </td>
+                </tr>
+              })}
+              
+            
             </tbody>
           </Table>
-        </Card.Body>
+        </Card.Body>):(<p className="text-center">Nothing to display</p>)}
       </Card>
 
       {/* Footer */}

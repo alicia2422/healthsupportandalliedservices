@@ -17,6 +17,10 @@ import TravelAndExpense from "./pages/travelandexpense";
 import HealthBenefits from "./pages/healthbenefits";
 import Covid19Benefits from "./pages/covid19benefits";
 import MedicalSupport from "./pages/medicalsupport";
+import CashContribution from "./pages/cashcontribution";
+import CoinSelectionPage from "./pages/setCoins";
+import ForgotPasswordPage from "./pages/forgotpassword";
+import ResetPasswordPage from "./pages/resetpassword";
 
 const RoutingComponent = () => {
   return (
@@ -30,10 +34,13 @@ const RoutingComponent = () => {
         <Route path="/invest" element={<Invest />} />
         <Route path="/withdraw" element={<Withdraw />} />
         <Route path="/addwallet" element={<AddWallet />} />
+        <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+        <Route path="/resetpassword/:id" element={<ResetPasswordPage />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/users" element={<AllUsers />} />
         <Route path="/admin/approveddeposits" element={<ApprovedDeposits />} />
         <Route path="/admin/pendingdeposits" element={<PendingDeposits />} />
+        <Route path="/admin/setcoins" element={<CoinSelectionPage />} />
         <Route
           path="/admin/pendingwithdrawals"
           element={<PendingWithdrawals />}
@@ -42,6 +49,7 @@ const RoutingComponent = () => {
         <Route path="/healthbenefits" element={<HealthBenefits />} />
         <Route path="/covid19benefits" element={<Covid19Benefits />} />
         <Route path="/medicalsupport" element={<MedicalSupport />} />
+        <Route path="/cashcontribution" element={<CashContribution />} />
         <Route
           path="/admin/approvedwithdrawals"
           element={<ApprovedWithdrawals />}

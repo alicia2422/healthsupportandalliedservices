@@ -125,7 +125,7 @@ const Home = () => {
             {completeText.substr(0, char)}
             <Cursor>|</Cursor>
           </p>
-          <a href="#about-us">Get Started</a>
+          <a href="/register">Get Started</a>
         </Content>
       </Hero>
       <HealthCenter />

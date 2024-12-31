@@ -57,7 +57,7 @@ const Header = () => {
             </Highlight>
             <span style={{ fontWeight: 600, color: "rgb(0,0,0,0.4)" }}>
               {" "}
-              mail@example.com
+              info@healthsupport
             </span>
           </span>
         </ContactDetailsCon>
@@ -71,11 +71,11 @@ const Header = () => {
 
       <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
         <Container>
-          <Navbar.Brand href="#home">HealthSupport</Navbar.Brand>
+          <Navbar.Brand href="/home">HealthSupport</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
+              <Nav.Link href="/home">Home</Nav.Link>
               {/* Services Dropdown */}
               <NavDropdown
                 title="Services"
@@ -88,7 +88,7 @@ const Header = () => {
                       <NavDropdown title="Investments">
                         {service.subs.map((sub) => {
                           return (
-                            <NavDropdown.Item href={`#${sub}`}>
+                            <NavDropdown.Item href={`#plans`}>
                               {sub}
                             </NavDropdown.Item>
                           );

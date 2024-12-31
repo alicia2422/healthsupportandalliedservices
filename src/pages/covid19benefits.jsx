@@ -154,7 +154,7 @@ const CovidGrantsPage = () => {
                   <Card.Text>
                     Assistance for medical bills and healthcare expenses.
                   </Card.Text>
-                  <Button variant="primary">
+                  <Button href="/register" variant="primary">
                     <i className="bi bi-arrow-right-circle"></i> Apply Now
                   </Button>
                 </Card.Body>
@@ -167,7 +167,7 @@ const CovidGrantsPage = () => {
                   <Card.Text>
                     Financial support for small businesses affected by COVID-19.
                   </Card.Text>
-                  <Button variant="primary">
+                  <Button href="/register" variant="primary">
                     <i className="bi bi-arrow-right-circle"></i> Apply Now
                   </Button>
                 </Card.Body>
@@ -180,7 +180,7 @@ const CovidGrantsPage = () => {
                   <Card.Text>
                     Grants for students to support online learning.
                   </Card.Text>
-                  <Button variant="primary">
+                  <Button href="/register" variant="primary">
                     <i className="bi bi-arrow-right-circle"></i> Apply Now
                   </Button>
                 </Card.Body>

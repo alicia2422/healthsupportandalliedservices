@@ -24,9 +24,9 @@ const IconWrapper = styled.div`
 `;
 
 const MedicalSupportMain = () => {
-  return (
-    <MainWrapper>
+  return (<>
       <Header />
+    <MainWrapper>
       <Container>
         <Row>
           <Col md={6} lg={4}>
@@ -75,6 +75,7 @@ const MedicalSupportMain = () => {
       </Container>
       <Footer />
     </MainWrapper>
+  </>
   );
 };
 

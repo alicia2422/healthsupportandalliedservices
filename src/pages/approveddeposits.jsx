@@ -5,8 +5,16 @@ import "./styles.css";
 import { HighLight } from "./login";
 import Footer from "../components/footer";
 import NavButtons from "../components/adminnavbuttons";
+import {selectAppStats} from "../state/slices/appSlice"
+import {useSelector} from "react-redux"
+import  {EmptyTable} from "./pendingdeposits"
 
-const AllUsers = () => {
+const ApprovedDeposits = () => {
+  const appStats= useSelector(selectAppStats)
+  console.log(appStats.allInvestments)
+  
+   const approvedDeposits= appStats.allInvestments.filter(x=>(x.status==="approved")||(x.status==="active"))
+   
   return (
     <div className="container-fluid">
       {/* Top Bar */}
@@ -31,7 +39,7 @@ const AllUsers = () => {
 
         {/* Navbar */}
         <Navbar expand="lg" className="py-lg-0 px-lg-5">
-          <Navbar.Brand href="index.html">
+          <Navbar.Brand href="/home">
             <h3 style={{ color: "rgb(0,0,0,0.5)" }} className="display-5 m-0">
               Health<HighLight>Support</HighLight>
             </h3>
@@ -39,7 +47,7 @@ const AllUsers = () => {
           <Navbar.Toggle aria-controls="navbarCollapse" />
           <Navbar.Collapse id="navbarCollapse">
             <Nav className="ms-auto">
-              <Nav.Link href="index.html" className="active">
+              <Nav.Link href="/home" className="active">
                 Home
               </Nav.Link>
               <Nav.Link href="/home#about">About</Nav.Link>
@@ -97,11 +105,11 @@ const AllUsers = () => {
       </div>
 
       {/* User Table */}
-      <Card className="mt-4">
+      <Card className="mt-4 mb-4">
         <Card.Header>
           <h3 className="text-center grayish">Approved Deposits</h3>
         </Card.Header>
-        <Card.Body>
+       {approvedDeposits.length>0?( <Card.Body>
           <Table striped bordered hover responsive>
             <thead>
               <tr>
@@ -113,24 +121,22 @@ const AllUsers = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>John Doe</td>
-                <td>johndoe@example.com</td>
-                <td>Admin</td>
-                <td>Active</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Jane Smith</td>
-                <td>janesmith@example.com</td>
-                <td>User</td>
-                <td>Inactive</td>
-              </tr>
-              {/* Add more rows as needed */}
+              {approvedDeposits.map(x=>{
+                return(
+                  <tr>
+                  <td><img style={{width:"50px", height:"50px",borderRadius:"50%", objectFit:"cover"}} src={x.userId.idImg}/></td>
+                  <td>{x.userId.name}</td>
+                  <td>{x.amount}</td>
+                  <td>{x.coin}</td>
+                  <td>{x.status}</td>
+                </tr>
+                )
+              })}
+              
+              
             </tbody>
           </Table>
-        </Card.Body>
+        </Card.Body>):(<EmptyTable/>)}
       </Card>
 
       {/* Footer */}
@@ -139,4 +145,4 @@ const AllUsers = () => {
   );
 };
 
-export default AllUsers;
+export default ApprovedDeposits;

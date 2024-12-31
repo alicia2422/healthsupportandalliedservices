@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 import Footer from "../components/footer";
+
+import { selectIsLogged, selectUserDetails } from "../state/slices/userSlice";
+import { useSelector } from "react-redux";
 import {
   Container,
   Navbar,
@@ -15,18 +19,54 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { HighLight } from "./login";
 import "./styles.css";
 import responsive from "../responsive";
+import fetchData from "../fetchData";
+import { developmentApiEntryPoint } from "./register";
+export const logOut=(nav)=>{
+window.localStorage.removeItem("support_token");
+nav("/")
+}
 const ContentCon = styled.div`
   margin-top: 100px;
   ${responsive("tablet", { margint_top: "50px" })};
 `;
 
 const Dashboard = () => {
+  const navigate = useNavigate()
+  const [stats,setStats]= useState({})
+  console.log(stats)
+  const userIsLogged= useSelector(selectIsLogged);
+  const userDetails=useSelector(selectUserDetails);
+  useEffect(()=>{
+    const token=localStorage.getItem("support_token")
+    if(!token||!userIsLogged){
+      navigate("/");
+    }
+    else{
+      fetchData(
+        `${developmentApiEntryPoint}/users/getstats`,
+        (data)=>{
+          setStats(data.result)
+        },
+        (message)=>{
+          console.log(message)
+          alert("An error occured")
+          navigate("/")
+        },
+        "POST",
+        {},
+        token
+
+      )
+    }
+    
+  },[])
+  console.log(userDetails)
   return (
     <Container fluid>
       {/* Navbar Start */}
       <Navbar expand="lg" bg="light" fixed="top" className="px-0">
         <Container>
-          <Navbar.Brand href="index.html" className="d-flex align-items-center">
+          <Navbar.Brand href="/" className="d-flex align-items-center">
             <h2 className="display-5  m-0">
               Health<HighLight>Support</HighLight>
             </h2>
@@ -43,13 +83,13 @@ const Dashboard = () => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item href="/invest">Invest</Dropdown.Item>
-                  <Dropdown.Item href="withdraw.html">Withdraw</Dropdown.Item>
-                  <Dropdown.Item onClick={() => alert("Logged out!")}>
+                  <Dropdown.Item href="/withdraw">Withdraw</Dropdown.Item>
+                  <Dropdown.Item onClick={()=>{logOut(navigate)}}>
                     Logout
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
-              <Nav.Link href="contact.html">Contact</Nav.Link>
+              <Nav.Link href="/home#contact">Contact</Nav.Link>
             </Nav>
             <Nav className="d-none d-lg-flex ms-3">
               <Nav.Link
@@ -93,37 +133,43 @@ const Dashboard = () => {
               {
                 title: "Balance",
                 id: "balance",
-                value: "0$",
+                value: userDetails.balance,
                 percentage: "45%",
               },
               {
                 title: "Last Deposit",
                 id: "lastDeposit",
-                value: "0",
+                value: userDetails.lastDeposit||0,
+                percentage: "45%",
+              },
+              {
+                title: "Active Deposits",
+                id: "activedeposit",
+                value: userDetails.activeDeposit.length,
                 percentage: "45%",
               },
               {
                 title: "Total Earnings",
                 id: "earnings",
-                value: "7,833",
+                value: userDetails.earnings,
                 percentage: "55%",
               },
               {
                 title: "Referral Bonus",
                 id: "ref",
-                value: "$0",
+                value: userDetails.referrallBonus||0,
                 percentage: "7%",
               },
               {
                 title: "Last Withdrawal",
                 id: "lastWithdrawal",
-                value: "$0",
+                value:userDetails.lastWithdrawal||0 ,
                 percentage: "7%",
               },
               {
                 title: "Pending Withdrawal",
                 id: "pendingWithdrawal",
-                value: "$0",
+                value: userDetails.pendingWithdrawal||0,
                 percentage: "7%",
               },
             ].map((card, index) => (
@@ -136,7 +182,7 @@ const Dashboard = () => {
                     <div className="bg-primary d-flex justify-content-between flex-wrap p-5 text-white align-items-lg-end">
                       <div className="d-flex flex-column">
                         <span className="h3 text-white" id={card.id}>
-                          {card.value}
+                          {card.title==="Active Deposits"?card.value:`$${card.value}`}
                         </span>
                       </div>
                       <div>
@@ -160,13 +206,13 @@ const Dashboard = () => {
             {
               title: "Total Deposits",
               id: "totalDeposit",
-              value: "0",
+              value: stats.totalDeposit||0,
               color: "bg-success",
             },
             {
               title: "Total Withdrawals",
               id: "totalWithdrawal",
-              value: "$0",
+              value: stats.totalWithrawal||0,
               color: "bg-success",
             },
           ].map((card, index) => (
@@ -181,7 +227,7 @@ const Dashboard = () => {
                   >
                     <div className="d-flex flex-column">
                       <span className="h3 text-white" id={card.id}>
-                        {card.value}
+                        ${card.value}
                       </span>
                     </div>
                   </div>

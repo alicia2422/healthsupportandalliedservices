@@ -146,7 +146,7 @@ const SubCon = styled.div`
   display: flex;
   background-color: rgb(0, 0, 0, 0.1);
   z-index: 2;
-  ${responsive("tablet", { height: "700px", margin_top: "50px" })};
+  ${responsive("tablet", { height: "700px", margin_top: "30px" })};
 `;
 
 const FormCon = styled.div`
@@ -155,7 +155,7 @@ const FormCon = styled.div`
   overflow-x: hidden;
   ${responsive("tablet", {
     width: "100vw",
-    height: "auto",
+    height: "800px",
   })};
 `;
 const FormSubCon = styled.div`
@@ -168,7 +168,7 @@ const FormSubCon = styled.div`
 const InputFlex = styled.div`
   display: flex;
   gap: 40px;
-  ${responsive("tablet", { flex_direction: "column" })}
+  ${responsive("tablet", { flex_direction: "column", gap:"5px" })}
 `;
 const FormGroup = styled.div`
   margin-bottom: 20px;
@@ -178,6 +178,7 @@ const Label = styled.label`
   font-size: 14px;
   margin-bottom: 20px;
   color: rgb(255, 255, 255, 0.4);
+  ${responsive("tablet",{margin_bottom:"10px"})}
 `;
 
 const Next = styled.button`
@@ -210,7 +211,11 @@ const logVals = (arr, gov_Id, dispatch, navigate, setErrors) => {
   });
   detailsObj = { ...detailsObj, idImg: gov_Id };
   const errors = validate_form(detailsObj);
+  if(detailsObj.password.length<8){
+  errors.push("Password has to be eight characters or more")
+  }
   setErrors(errors);
+  
   console.log(detailsObj);
   if (errors.length === 0) {
     fetchData(
@@ -218,13 +223,17 @@ const logVals = (arr, gov_Id, dispatch, navigate, setErrors) => {
       (data) => {
         console.log(data.result);
         dispatch(setIsLogged(true));
-        dispatch(setUserDetails(data.result));
+        window.localStorage.setItem("support_token", data.result.token)
         navigate("/");
       },
       (data) => {
-        setErrors([data.result]);
+        setErrors([data]);
       },
-      "POST"
+      "POST",
+      
+      {
+        ...detailsObj,name:`${detailsObj.firstName} ${detailsObj.lastName}`
+      }
     );
   }
 };

@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, ListGroup } from "react-bootstrap";
 const ErrorModal = ({ errors }) => {
-  const [show, setShow] = useState(errors.length > 0);
+  const [show, setShow] = useState(errors.length>0);
+  useEffect(()=>{
+    setShow(errors.length>0)
+  },[errors])
   const onClose = () => {
     setShow(false);
     window.location.reload();

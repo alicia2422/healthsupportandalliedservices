@@ -1,5 +1,5 @@
 // AdminPage.js
-import React from "react";
+import React, { useEffect} from "react";
 import Footer from "../components/footer";
 import {
   Container,
@@ -21,13 +21,33 @@ import {
 } from "react-icons/fa";
 import NavButtons from "../components/adminnavbuttons";
 import { HighLight } from "./login";
+import fetchData from "../fetchData";
+import { developmentApiEntryPoint } from "./register";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAppStats, setAppStats } from "../state/slices/appSlice";
 
 const AdminPage = () => {
+  const dispatch= useDispatch()
+  const  appStats= useSelector(selectAppStats)
+  console.log(appStats)
+  useEffect(()=>{
+    fetchData(
+      `${developmentApiEntryPoint}/admin/getstats`,
+      (data)=>{
+        dispatch(setAppStats(data.result))
+      },
+      (message)=>{
+        alert("an error occured")
+        window.location.reload()
+      }
+    )
+  },[])
   const stats = [
-    { title: "Total Users", value: 7 },
-    { title: "Total Investments", value: 900000 },
-    { title: "Pending Requests", value: 2 },
+    { title: "Total Users", value: appStats.allUsers.length||"Fetching..." },
+    { title: "Total Investments", value: appStats.allInvestments.length||"Fetching..." },
+    { title: "Pending Requests", value: appStats.allWithdrawals.length||"Fetching..." },
   ];
+
   return (
     <Container fluid className="p-0">
       {/* Top Bar */}
@@ -52,7 +72,7 @@ const AdminPage = () => {
 
       {/* Navbar */}
       <Navbar expand="lg" bg="light" variant="light" className="py-3 px-lg-5">
-        <Navbar.Brand href="index.html" className="d-flex align-items-center">
+        <Navbar.Brand href="/" className="d-flex align-items-center">
           <h1 className="display-5  mb-0">
             Health<HighLight>Support</HighLight>
           </h1>
@@ -60,14 +80,14 @@ const AdminPage = () => {
         <Navbar.Toggle aria-controls="navbar-nav" />
         <Navbar.Collapse id="navbar-nav">
           <Nav className="ms-auto">
-            <Nav.Link href="index.html" active>
+            <Nav.Link href="/home" active>
               Home
             </Nav.Link>
-            <Nav.Link href="about.html">About</Nav.Link>
-            <Nav.Link href="service.html">Services</Nav.Link>
+            <Nav.Link href="/home#about">About</Nav.Link>
+            <Nav.Link href="/home#service">Services</Nav.Link>
             <NavDropdown title="Actions" id="nav-dropdown">
-              <NavDropdown.Item href="invest.html">Invest</NavDropdown.Item>
-              <NavDropdown.Item href="withdraw.html">Withdraw</NavDropdown.Item>
+              <NavDropdown.Item href="/invest">Invest</NavDropdown.Item>
+              <NavDropdown.Item href="/withdraw">Withdraw</NavDropdown.Item>
               <NavDropdown.Item
                 className="text-danger"
                 onClick={() => alert("Logging out")}
@@ -75,7 +95,7 @@ const AdminPage = () => {
                 Logout
               </NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link href="contact.html">Contact</Nav.Link>
+            <Nav.Link href="/home#contact">Contact</Nav.Link>
           </Nav>
           <div className="d-none d-lg-flex ms-3">
             <Button variant="light" className="rounded-circle btn-sm mx-1">

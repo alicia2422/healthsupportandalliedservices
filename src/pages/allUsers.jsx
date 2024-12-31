@@ -1,12 +1,18 @@
 import React from "react";
-import { Navbar, Nav, NavDropdown, Button, Table, Card } from "react-bootstrap";
+import { Navbar, Nav, NavDropdown, Button, Table, Card,Image} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 import { HighLight } from "./login";
+import {selectAppStats} from "../state/slices/appSlice"
 import Footer from "../components/footer";
 import NavButtons from "../components/adminnavbuttons";
+import { useSelector } from "react-redux";
 
 const AllUsers = () => {
+  const appStats=useSelector(selectAppStats)
+  const {allUsers}=appStats
+  console.log(allUsers)
+
   return (
     <div className="container-fluid">
       {/* Top Bar */}
@@ -31,7 +37,7 @@ const AllUsers = () => {
 
         {/* Navbar */}
         <Navbar expand="lg" className="py-lg-0 px-lg-5">
-          <Navbar.Brand href="index.html">
+          <Navbar.Brand href="/home">
             <h3 style={{ color: "rgb(0,0,0,0.5)" }} className="display-5 m-0">
               Health<HighLight>Support</HighLight>
             </h3>
@@ -39,7 +45,7 @@ const AllUsers = () => {
           <Navbar.Toggle aria-controls="navbarCollapse" />
           <Navbar.Collapse id="navbarCollapse">
             <Nav className="ms-auto">
-              <Nav.Link href="index.html" className="active">
+              <Nav.Link href="/home" className="active">
                 Home
               </Nav.Link>
               <Nav.Link href="/home#about">About</Nav.Link>
@@ -105,7 +111,7 @@ const AllUsers = () => {
           <Table striped bordered hover responsive>
             <thead>
               <tr>
-                <th>#</th>
+                <th>id</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
@@ -113,21 +119,19 @@ const AllUsers = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>John Doe</td>
-                <td>johndoe@example.com</td>
-                <td>Admin</td>
-                <td>Active</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>Jane Smith</td>
-                <td>janesmith@example.com</td>
-                <td>User</td>
-                <td>Inactive</td>
-              </tr>
-              {/* Add more rows as needed */}
+              {allUsers.map(user=>{
+                return(
+                  <tr>
+                  <td>{user.idImg?<Image width={30} style={{objectFit:"cover", borderRadius:"50%"}} height={30} src={user.idImg}/>:"unavailable"}</td>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td>{user.isAdmin?"Admin":"client"}</td>
+                  <td>Active</td>
+                </tr>
+                )
+              })}
+             
+              
             </tbody>
           </Table>
         </Card.Body>

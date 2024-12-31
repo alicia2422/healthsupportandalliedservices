@@ -82,7 +82,7 @@ const InvestmentPlans = () => {
                   <strong>{plan.reinvestment}</strong>
                 </Card.Text>
                 <Button
-                  href="./register.html"
+                  href="./register"
                   style={{ backgroundColor: "#1abc9c", border: "none" }}
                   className="px-4 py-2"
                 >

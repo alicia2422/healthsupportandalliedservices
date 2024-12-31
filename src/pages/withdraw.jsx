@@ -13,12 +13,17 @@ import btc from "../assets/coin-icons/btc.png";
 import doge from "../assets/coin-icons/dogecoin.svg";
 import eth from "../assets/coin-icons/ethereum.png";
 import usdt from "../assets/coin-icons/usdt.svg";
+import { useSelector } from "react-redux";
 
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 import { HighLight } from "./login";
 import Footer from "../components/footer";
+import { selectUserDetails } from "../state/slices/userSlice";
+import fetchData from "../fetchData";
+import { developmentApiEntryPoint } from "./register";
+import { useNavigate } from "react-router-dom";
 export const coins = [
   { name: "ethereum", id: "ethereum", image: eth },
   { name: "bitcoin", id: "bitcoin", image: btc },
@@ -26,29 +31,61 @@ export const coins = [
   { name: "usdt", id: "usdt", image: usdt },
 ];
 const App = () => {
+  const userDetails=useSelector(selectUserDetails)
+  const navigate=useNavigate()
+  console.log(userDetails)
   const logout = () => {};
-  const balance = 500;
+  const {balance, walletIds}= userDetails
+  const availableWallets=Object.keys(walletIds).filter(x=>walletIds[x]!=="none")
+  console.log({availableWallets})
   const [selectedCoin, setSelectedCoin] = useState("");
   const [amount, setAmount] = useState();
   const [errors, setErrors] = useState([]);
+  const availableCoinLogo=[]
+  availableWallets.forEach(wallet=>{
+    coins.forEach(coin=>{
+      if(coin.id===wallet){
+        availableCoinLogo.push(coin)
+      }
+    })
+  })
 
   const withdraw = async () => {
     const errArray = [];
+    const token= localStorage.getItem("support_token")
     if (amount > balance) {
       errArray.push("Insufficient funds");
     }
     if (!selectedCoin) {
       errArray.push("Select wallet by clicking the logo");
     }
+    if(errArray.length===0){
+      fetchData(
+        `${developmentApiEntryPoint}/requests/withdraw`,
+      (data)=>{
+        alert("withdrawal was successful");
+        navigate("/")
+      },
+      (message)=>{
+        alert("an error occured")
+        navigate("/dashboard")
+      },
+      "POST",
+      {amount, wallet:{coin:selectedCoin,walletId:userDetails.walletIds[selectedCoin]}}
+    ,
+    token  
+    )
+    }
     setErrors(errArray);
   };
-
+  console.log({selectedCoin})
+  console.log(availableCoinLogo)
   return (
     <>
       {/* Navbar Start */}
       <Navbar bg="light" expand="lg" fixed="top" className="py-3">
         <Container>
-          <Navbar.Brand href="index.html" className="d-flex align-items-center">
+          <Navbar.Brand href="/" className="d-flex align-items-center">
             <h1 className="m-0">
               Health<HighLight>Support</HighLight>
             </h1>
@@ -56,15 +93,15 @@ const App = () => {
           <Navbar.Toggle aria-controls="navbar-nav" />
           <Navbar.Collapse id="navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link href="index.html">Home</Nav.Link>
-              <Nav.Link href="about.html">About</Nav.Link>
-              <Nav.Link href="service.html">Services</Nav.Link>
+              <Nav.Link href="/">Home</Nav.Link>
+              <Nav.Link href="/home#about">About</Nav.Link>
+              <Nav.Link href="/home#services">Services</Nav.Link>
               <NavDropdown title="Actions" id="actions-dropdown">
-                <NavDropdown.Item href="invest.html">Invest</NavDropdown.Item>
-                <NavDropdown.Item href="withdraw.html">
+                <NavDropdown.Item href="/invest">Invest</NavDropdown.Item>
+                <NavDropdown.Item href="/withdraw">
                   Withdraw
                 </NavDropdown.Item>
-                <NavDropdown.Item href="userdashboard.html">
+                <NavDropdown.Item href="/dashboard">
                   Dashboard
                 </NavDropdown.Item>
                 <Button
@@ -74,7 +111,7 @@ const App = () => {
                   Logout
                 </Button>
               </NavDropdown>
-              <Nav.Link href="contact.html">Contact</Nav.Link>
+              <Nav.Link href="/home#contact">Contact</Nav.Link>
             </Nav>
             <div className="d-none d-lg-flex ms-2">
               <a
@@ -117,7 +154,7 @@ const App = () => {
               <div className="bg-white border rounded p-4">
                 <div className="text-center">
                   <p className="border rounded text-primary fw-bold py-1 px-3">
-                    Current Balance: <span id="balanceCon"></span>
+                    Current Balance: <span id="balanceCon"> $ {balance}</span>
                   </p>
                   <p className="border rounded text-primary fw-bold py-1 px-3">
                     Current wallet: <span id="selectedCoin"></span>
@@ -128,9 +165,9 @@ const App = () => {
                 <div className="availableWallets text-center">
                   <p className="text-success mb-5 h4">Available wallets</p>
                   <div className="coins-con d-flex align-items-center justify-content-center gap-3 flex-wrap">
-                    {coins.map((coin) => {
+                    {availableCoinLogo.map((coin) => {
                       return (
-                        <Image
+                          <Image
                           onClick={() => {
                             setSelectedCoin(coin.id);
                           }}
@@ -149,8 +186,14 @@ const App = () => {
                                 : "none",
                           }}
                         />
+                          
+                        
                       );
                     })}
+                    {(availableWallets.length===0)&&<>
+                          <p className="text-danger">You haven't added a wallet yet</p>
+                          <Button href="/addwallet" variant="outline-info">Add wallet</Button>
+                          </>}
                   </div>
                   <p id="walletId" className="text-primary h4"></p>
                 </div>

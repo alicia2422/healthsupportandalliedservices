@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import responsive from "../responsive.js";
 import { RiMenu4Line } from "react-icons/ri";
 import { AiOutlineClose } from "react-icons/ai";
-const developmentApiEntryPoint = "#";
+import {developmentApiEntryPoint} from "./register" ;
 const Nav = styled.div`
   display: flex;
   align-items: center;
@@ -129,7 +129,7 @@ const Next = styled.button`
 export const HighLight = styled.span`
   color: #1abc9c;
 `;
-const logVals = (email, password, fn) => {
+const logVals = (email, password, fn,nav) => {
   fn("Loading ...");
   try {
     fetch(`${developmentApiEntryPoint}/users/login`, {
@@ -142,7 +142,16 @@ const logVals = (email, password, fn) => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        fn(data.result);
+        if(data.success){
+          localStorage.setItem("support_token",data.result.token)
+          alert("you've logged in succesfully")
+          nav("/")
+
+        }else{
+          alert("We are sorry, we couldn't log you in check if details are correct")
+          nav("/login")
+        }
+        
       });
   } catch (error) {
     console.log(error);
@@ -267,7 +276,8 @@ const Login = () => {
                   }}
                 />
               </FormGroup>
-              <Next onClick={() => logVals(email, password, setMessage)}>
+              <a href="/forgotpassword" style={{textDecoration:"none",display:"block"}}> forgot password?</a>
+              <Next onClick={() => logVals(email, password, setMessage, navigate)}>
                 Login
               </Next>
             </FormSubCon>

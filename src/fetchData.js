@@ -1,4 +1,4 @@
-const fetchData = async (
+const fetchData =  (
   url,
   onSuccess,
   onFail,
@@ -18,18 +18,22 @@ const fetchData = async (
   if (method !== "GET") {
     reqObj.body = JSON.stringify(body || {});
   }
-  try {
-    const res = await fetch(url, reqObj);
-    const data = await res.json();
+  
+    fetch(url,reqObj)
+    .then(res=>res.json())
+    .then(data=>{
+      console.log({data})
     if (data.success) {
-      onSuccess();
+      onSuccess(data);
     } else {
-      onFail();
+      onFail(data.result);
     }
-  } catch (err) {
-    console.log(err.message);
-    onFail(err.message);
-  }
+    }).catch (err=>{
+      console.log(err.message);
+      onFail(err.message);
+    
+    }) 
+    
 };
 
 export default fetchData;
